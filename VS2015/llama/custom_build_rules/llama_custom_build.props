@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup
+    Condition="'$(llamaBeforeTargets)' == '' and '$(llamaAfterTargets)' == '' and '$(ConfigurationType)' != 'Makefile'">
+    <llamaBeforeTargets>Midl</llamaBeforeTargets>
+    <llamaAfterTargets>CustomBuild</llamaAfterTargets>
+  </PropertyGroup>
+  <PropertyGroup>
+    <llamaDependsOn
+      Condition="'$(ConfigurationType)' != 'Makefile'">_SelectedFiles;$(llamaDependsOn)</llamaDependsOn>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <llama>
+      <OutputFile>llout.c</OutputFile>
+      <DefinesFile>llout.h</DefinesFile>
+      <CommandLineTemplate>
+        set LIB=..\..\..\LIB
+        start /B /WAIT /D "%(RootDir)%(Directory)" ..\Debug\llama.exe [AllOptions] [AdditionalOptions] %(Filename)
+        exit /b %errorlevel%
+      </CommandLineTemplate>
+      <Outputs>%(RootDir)%(Directory)%(OutputFile);</Outputs>
+      <ExecutionDescription>Process "%(Filename)%(Extension)" llama file</ExecutionDescription>
+    </llama>
+  </ItemDefinitionGroup>
+</Project>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <PropertyPageSchema
+      Include="$(MSBuildThisFileDirectory)$(MSBuildThisFileName).xml" />
+    <AvailableItemName
+      Include="llama">
+      <Targets>llamaTarget</Targets>
+    </AvailableItemName>
+  </ItemGroup>
+  <UsingTask
+    TaskName="llama"
+    TaskFactory="XamlTaskFactory"
+    AssemblyName="Microsoft.Build.Tasks.v4.0">
+    <Task>$(MSBuildThisFileDirectory)$(MSBuildThisFileName).xml</Task>
+  </UsingTask>
+  <PropertyGroup>
+    <ComputeLibInputsTargets>
+            $(ComputeLibInputsTargets);
+            ComputellamaOutput;
+          </ComputeLibInputsTargets>
+  </PropertyGroup>
+  <Target
+    Name="llamaTarget"
+    BeforeTargets="$(llamaBeforeTargets)"
+    AfterTargets="$(llamaAfterTargets)"
+    Condition="'@(llama)' != ''"
+    DependsOnTargets="$(llamaDependsOn);ComputellamaOutput"
+    Outputs="%(llama.Outputs)"
+    Inputs="%(llama.Identity);%(llama.AdditionalDependencies);$(MSBuildProjectFile)">
+    <ItemGroup
+      Condition="'@(SelectedFiles)' != ''">
+      <llama
+        Remove="@(llama)"
+        Condition="'%(Identity)' != '@(SelectedFiles)'" />
+    </ItemGroup>
+    <ItemGroup>
+      <llama_tlog
+        Include="%(llama.Outputs)"
+        Condition="'%(llama.Outputs)' != '' and '%(llama.ExcludedFromBuild)' != 'true'">
+        <Source>@(llama, '|')</Source>
+      </llama_tlog>
+    </ItemGroup>
+    <Message
+      Importance="High"
+      Text="%(llama.ExecutionDescription)" />
+    <WriteLinesToFile
+      Condition="'@(llama_tlog)' != '' and '%(llama_tlog.ExcludedFromBuild)' != 'true'"
+      File="$(IntDir)$(ProjectName).write.1.tlog"
+      Lines="^%(llama_tlog.Source);@(llama_tlog-&gt;'%(Fullpath)')" />
+    <llama
+      Condition="'@(llama)' != '' and '%(llama.ExcludedFromBuild)' != 'true'"
+      CommandLineTemplate="%(llama.CommandLineTemplate)"
+      Debug="%(llama.Debug)"
+      Verbose="%(llama.Verbose)"
+      NoLines="%(llama.NoLines)"
+      Fast="%(llama.Fast)"
+      StandardOutput="%(llama.StandardOutput)"
+      Warnings="%(llama.Warnings)"
+      SuppressAllWarnings="%(llama.SuppressAllWarnings)"
+      Report="%(llama.Report)"
+      OutputParserOnly="%(llama.OutputParserOnly)"
+      AdditionalOptions="%(llama.AdditionalOptions)"
+      Inputs="%(llama.Identity)" />
+  </Target>
+  <Target
+    Name="ComputellamaOutput"
+    Condition="'@(llama)' != ''">
+    <ItemGroup>
+      <llamaDirsToMake
+        Condition="'@(llama)' != '' and '%(llama.ExcludedFromBuild)' != 'true'"
+        Include="%(llama.Outputs)" />
+      <Link
+        Include="%(llamaDirsToMake.Identity)"
+        Condition="'%(Extension)'=='.obj' or '%(Extension)'=='.res' or '%(Extension)'=='.rsc' or '%(Extension)'=='.lib'" />
+      <Lib
+        Include="%(llamaDirsToMake.Identity)"
+        Condition="'%(Extension)'=='.obj' or '%(Extension)'=='.res' or '%(Extension)'=='.rsc' or '%(Extension)'=='.lib'" />
+      <ImpLib
+        Include="%(llamaDirsToMake.Identity)"
+        Condition="'%(Extension)'=='.obj' or '%(Extension)'=='.res' or '%(Extension)'=='.rsc' or '%(Extension)'=='.lib'" />
+    </ItemGroup>
+    <MakeDir
+      Directories="@(llamaDirsToMake-&gt;'%(RootDir)%(Directory)')" />
+  </Target>
+</Project>

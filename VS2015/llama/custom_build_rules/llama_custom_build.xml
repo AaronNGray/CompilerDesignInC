@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectSchemaDefinitions xmlns="clr-namespace:Microsoft.Build.Framework.XamlTypes;assembly=Microsoft.Build.Framework" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:transformCallback="Microsoft.Cpp.Dev10.ConvertPropertyCallback">
+  <Rule
+    Name="llama"
+    PageTemplate="tool"
+    DisplayName="llama files"
+    SwitchPrefix="-"
+    Order="200">
+    <Rule.DataSource>
+      <DataSource
+        Persistence="ProjectFile"
+        ItemType="llama" />
+    </Rule.DataSource>
+    <Rule.Categories>
+      <Category
+        Name="General">
+        <Category.DisplayName>
+          <sys:String>General</sys:String>
+        </Category.DisplayName>
+      </Category>
+      <Category
+        Name="llama Options">
+        <Category.DisplayName>
+          <sys:String>llama Options</sys:String>
+        </Category.DisplayName>
+      </Category>
+      <Category
+        Name="Command Line"
+        Subtype="CommandLine">
+        <Category.DisplayName>
+          <sys:String>Command Line</sys:String>
+        </Category.DisplayName>
+      </Category>
+    </Rule.Categories>
+
+    <BoolProperty
+      Name="Debug"
+      Category="llama Options"
+      DisplayName="Debug"
+      Description="enable (D)ebug mode in yyparse.c (implies -s). (-D)"
+      Switch="D" />
+
+    <BoolProperty
+      Name="NoLines"
+      Category="llama Options"
+      DisplayName="No lines"
+      Description="Don’t put any #line preprocessor commands in the parser implementation file. (-l)"
+      Switch="l" />
+
+    <BoolProperty
+      Name="Fast"
+      Category="llama Options"
+      DisplayName="Fast"
+      Description="(F)ast, uncompressed, tables. (-f)"
+      Switch="f" />
+
+    <BoolProperty
+      Name="StandardOutput"
+      Category="llama Options"
+      DisplayName="StandardOutput"
+      Description="print all (T)ables (and the parser) to standard output (-t)"
+      Switch="t" />
+
+    <BoolProperty
+      Name="OutputParserOnly"
+      Category="llama Options"
+      DisplayName="Output Parser Only"
+      Description="output parser only (can be used with -T also). (-p)"
+      Switch="p" />
+
+    <BoolProperty
+      Name="Report"
+      Category="llama Options"
+      DisplayName="Report"
+      Description="more verbose than -v. Implies -t, &amp; yyout.doc goes to stderr. (-V)"
+      Switch="V" />
+
+    <BoolProperty
+      Name="Verbose"
+      Category="llama Options"
+      DisplayName="Verbose"
+      Description="print (V)erbose diagnostics (including symbol table). (-v)"
+      Switch="v" />
+
+    <BoolProperty
+      Name="Warnings"
+      Category="llama Options"
+      DisplayName="Warnings"
+      Description="warnings (as well as errors) generate nonzero exit status. (-W)"
+      Switch="W" />
+
+    <BoolProperty
+      Name="SuppressAllWarnings"
+      Category="llama Options"
+      DisplayName="SuppressAllWarnings"
+      Description="suppress all warning messages. (-w)"
+      Switch="w" />
+
+    <StringListProperty
+      Name="Inputs"
+      Category="Command Line"
+      IsRequired="true"
+      Switch=" ">
+      <StringListProperty.DataSource>
+        <DataSource
+          Persistence="ProjectFile"
+          ItemType="llama"
+          SourceType="Item" />
+      </StringListProperty.DataSource>
+    </StringListProperty>
+
+    <StringProperty
+      Name="CommandLineTemplate"
+      DisplayName="Command Line"
+      Visible="False"
+      IncludeInCommandLine="False" />
+
+    <DynamicEnumProperty
+      Name="llamaBeforeTargets"
+      Category="General"
+      EnumProvider="Targets"
+      IncludeInCommandLine="False">
+      <DynamicEnumProperty.DisplayName>
+        <sys:String>Execute Before</sys:String>
+      </DynamicEnumProperty.DisplayName>
+      <DynamicEnumProperty.Description>
+        <sys:String>Specifies the targets for the build customization to run before.</sys:String>
+      </DynamicEnumProperty.Description>
+      <DynamicEnumProperty.ProviderSettings>
+        <NameValuePair
+          Name="Exclude"
+          Value="^llamaBeforeTargets|^Compute" />
+      </DynamicEnumProperty.ProviderSettings>
+      <DynamicEnumProperty.DataSource>
+        <DataSource
+          Persistence="ProjectFile"
+          HasConfigurationCondition="true" />
+      </DynamicEnumProperty.DataSource>
+    </DynamicEnumProperty>
+    <DynamicEnumProperty
+      Name="llamaAfterTargets"
+      Category="General"
+      EnumProvider="Targets"
+      IncludeInCommandLine="False">
+      <DynamicEnumProperty.DisplayName>
+        <sys:String>Execute After</sys:String>
+      </DynamicEnumProperty.DisplayName>
+      <DynamicEnumProperty.Description>
+        <sys:String>Specifies the targets for the build customization to run after.</sys:String>
+      </DynamicEnumProperty.Description>
+      <DynamicEnumProperty.ProviderSettings>
+        <NameValuePair
+          Name="Exclude"
+          Value="^llamaAfterTargets|^Compute" />
+      </DynamicEnumProperty.ProviderSettings>
+      <DynamicEnumProperty.DataSource>
+        <DataSource
+          Persistence="ProjectFile"
+          ItemType=""
+          HasConfigurationCondition="true" />
+      </DynamicEnumProperty.DataSource>
+    </DynamicEnumProperty>
+    <StringListProperty
+      Name="Outputs"
+      DisplayName="Outputs"
+      Visible="False"
+      IncludeInCommandLine="False" />
+    <StringProperty
+      Name="ExecutionDescription"
+      DisplayName="Execution Description"
+      Visible="False"
+      IncludeInCommandLine="False" />
+    <StringListProperty
+      Name="AdditionalDependencies"
+      DisplayName="Additional Dependencies"
+      IncludeInCommandLine="False"
+      Visible="false" />
+    <StringProperty
+      Subtype="AdditionalOptions"
+      Name="AdditionalOptions"
+      Category="Command Line">
+      <StringProperty.DisplayName>
+        <sys:String>Additional Options</sys:String>
+      </StringProperty.DisplayName>
+      <StringProperty.Description>
+        <sys:String>Additional Options</sys:String>
+      </StringProperty.Description>
+    </StringProperty>
+  </Rule>
+  <ItemType
+    Name="llama"
+    DisplayName="llama files" />
+  <FileExtension
+    Name="*.LMA"
+    ContentType="llama" />
+  <ContentType
+    Name="llama"
+    DisplayName="llama files"
+    ItemType="llama" />
+</ProjectSchemaDefinitions>

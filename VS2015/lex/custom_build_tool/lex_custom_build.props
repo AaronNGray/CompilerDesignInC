@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup
+    Condition="'$(lexBeforeTargets)' == '' and '$(lexAfterTargets)' == '' and '$(ConfigurationType)' != 'Makefile'">
+    <lexBeforeTargets>Midl</lexBeforeTargets>
+    <lexAfterTargets>CustomBuild</lexAfterTargets>
+  </PropertyGroup>
+  <PropertyGroup>
+    <lexDependsOn
+      Condition="'$(ConfigurationType)' != 'Makefile'">_SelectedFiles;$(lexDependsOn)</lexDependsOn>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <lex>
+      <OutputFile>yylex.c</OutputFile>
+      <Wincompat>true</Wincompat>
+      <CommandLineTemplate>set LIB=..\..\..\LIB
+        start /B /WAIT /D "%(RootDir)%(Directory)" ..\Debug\lex.exe [AllOptions] [AdditionalOptions] %(Filename)%(Extension)
+        exit /b %errorlevel%</CommandLineTemplate>
+      <Outputs>%(RootDir)%(Directory)%(OutputFile);</Outputs>
+      <ExecutionDescription>Process "%(Filename)%(Extension)" lex file</ExecutionDescription>
+    </lex>
+  </ItemDefinitionGroup>
+</Project>
