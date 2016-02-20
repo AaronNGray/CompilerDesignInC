@@ -1,0 +1,268 @@
+#@A (C) 1992 Allen I. Holub 
+
+#----------------------------------------------------------------------
+# This makefile, for Microsoft NMAKE,  creates three libraries :
+#
+#	comp.lib	is routines used by lex, yacc, and llama, but
+#			not by the programs that these programs generate.
+#			(small model)
+#
+#	compc.lib	Compact-model version of comp.lib
+#
+#	l.lib		is the runtime library for lex, yacc, and llama.
+#	lc.lib		is a compact-model version of l.lib
+#
+# You always need to link l.lib to lex, llama, or yacc output files.
+#
+# In addition, you need to link curses.lib and termlib.lib if you're
+# in debug mode. Similarly, the routines used by occs to make the LR(1)
+# state machines use the routines in tree.lib.
+#
+# Note that a few subroutines are in more than one library.
+#----------------------------------------------------------------------
+# The cc driver, which invokes Microsoft's cl, is used to do the compiling.
+# This program is included in both source and executable form on the sources
+# distribution disk. It translates a UNIX-like command line (which uses forward
+# slashes in path names) into a DOS-like command line (which uses backslashes
+# in path names) and then chains to cl.exe. Use dashes to introduce command-line
+# arguments. Since link doesn't recognize dashes, all text on the cc command
+# line following a -link directive is not modified.
+#----------------------------------------------------------------------
+# The MALLOC and M macros enable a debugging routine that verifies malloc
+# and free calls. dmalloc.c is NOT included on the distribution disk. It's
+# It is described in "The C Chest", Dr. Dobb's Journal (June, 1988), if you're
+# intrested. Don't uncomment the MALLOC and M macros unless you get the
+# dmalloc routine out of the Dr. Dobb's article.
+#
+# MALLOC = -DMAP_MALLOC
+# M      = dmalloc.obj
+#
+#----------------------------------------------------------------------
+# objects in L0 are not included in l.h by the "make l.h" command.
+
+COMP1	 = assort.obj bintoasc.obj copyfile.obj defnext.obj driver.obj esc.obj
+COMP2	 = fputstr.obj hash.obj hashadd.obj hashpjw.obj mean.obj memiset.obj
+COMP3	 = movefile.obj pairs.obj pchar.obj print_ar.obj printv.obj searchen.obj
+COMP4	 = set.obj ssort.obj stol.obj
+
+L0	 = yymain.obj
+L1	 = input.obj yypstk.obj yywrap.obj yyhook_a.obj yyhook_b.obj
+L2	 = yyinitlx.obj yyinitox.obj yyinitll.obj yydebug.obj
+
+BOTH	 = concat.obj ferr.obj onferr.obj prnt.obj
+
+COMP_OBJ = $(COMP1) $(COMP2) $(COMP3) $(COMP4) $(BOTH) $(M)
+L_OBJ	 = $(L0) $(L1) $(L2) $(BOTH) $(M)
+
+#----------------------------------------------------------------------
+# In my own directory system, some of the sources are in a tools directory
+# rather than the current one. Since I've merged these two directories
+# together on the distribution disk, both of the following macros are
+# the same.
+#
+# $(ROOT), empty here, is appended to the front of all directory names
+# wherever they appear. You should modify it if the compiler-sources file
+# system is rooted somewhere else than the actual root directory.
+
+ROOT  =
+HERE  = $(ROOT)/src/compiler/lib
+TOOLS=$(HERE)
+
+#----------------------------------------------------------------------
+# Macro definitions can be overridden from the command line to make
+# small-model version. See makelib.sh.
+
+CV   = -Zi
+COMPSW = -c $(CV) $(MODEL) $(MALLOC) -Ox -Oa
+NO_ALIAS = -c $(CV) $(MODEL) $(MALLOC) -Ox
+
+MODEL  = -AC
+CTARG  = /lib/compc.lib
+LTARG  = /lib/lc.lib
+
+# Small-model defintions :
+# MODEL  =
+# CTARG  = /lib/comp.lib
+# LTARG  = /lib/l.lib
+
+#----------------------------------------------------------------------
+# make all	creates both libraries
+# make h	creates the two prototype files (compiler.h and l.h)
+#		You need to be running Allen Holub's shell (availiable
+#		from M&T Publishing in Redwood City, California under the
+#		title "On Command)" to create these files.
+
+all  :	$(LTARG) $(CTARG)
+	echo done with make
+
+h  :	compiler.h l.h
+	echo done with make
+
+#----------------------------------------------------------------------
+
+$(CTARG) :  $(COMP_OBJ)
+	 rm comp.lib
+	 lib @<<
+comp
+y
+$(COMP1) &
+$(COMP2) &
+$(COMP3) &
+$(COMP4) &
+$(BOTH) $(M)
+comp.ndx
+<<
+	mv comp.lib $(CTARG)
+
+#----------------------------------------------------------------------
+
+$(LTARG) :  $(L_OBJ)
+	 rm l.lib
+	 lib @<<
+l
+y
+$(BOTH) &
+$(L1) &
+$(L2)
+l.ndx
+<<
+	mv l.lib  $(LTARG)
+
+#----------------------------------------------------------------------
+# use proto.sh to make prototype files. Not useful unless you have my
+# shell, described in On Command, Writing an UNIX-like shell for MS-DOS
+# (Redwood City [Calif.] : M&T Books).
+#
+compiler.h :
+    & echo /include/tools/compiler.h >  proto.in
+    & echo $(COMP1) >> proto.in
+    & echo $(COMP2) >> proto.in
+    & echo $(COMP3) >> proto.in
+    & echo $(COMP4) >> proto.in
+    & echo $(BOTH)  >> proto.in
+    & proto
+    & rm proto.in
+
+l.h :
+    & echo  /include/tools/l.h > proto.in
+    & echo $(L1)   >> proto.in
+    & echo $(L2)   >> proto.in
+    & echo $(BOTH) >> proto.in
+    & proto
+    & rm proto.in
+
+#----------------------------------------------------------------------
+# The following routines are used by lex and yacc, but not by the
+# programs that lex and yacc generate
+#
+
+bintoasc.obj :	$(TOOLS)/bintoasc.c
+		cc $(COMPSW) $(TOOLS)/bintoasc.c
+
+copyfile.obj :	$(TOOLS)/copyfile.c
+		cc $(NO_ALIAS) $(TOOLS)/copyfile.c
+
+concat.obj :	$(TOOLS)/concat.c
+		cc $(COMPSW) $(TOOLS)/concat.c
+
+dmalloc.obj :	$(TOOLS)/dmalloc.c
+ 		cc $(COMPSW) $(TOOLS)/dmalloc.c
+
+driver.obj :	driver.c
+		cc $(COMPSW) $(HERE)/driver.c
+
+defnext.obj :	defnext.c
+		cc $(COMPSW) $(HERE)/defnext.c
+
+esc.obj :	$(TOOLS)/esc.c
+		cc $(COMPSW) $(TOOLS)/esc.c
+
+ferr.obj :	$(TOOLS)/ferr.c
+		cc $(COMPSW) $(TOOLS)/ferr.c
+
+fputstr.obj :	$(TOOLS)/fputstr.c
+		cc $(COMPSW) $(TOOLS)/fputstr.c
+
+onferr.obj :	$(TOOLS)/onferr.c
+		cc $(COMPSW) $(TOOLS)/onferr.c
+
+hash.obj :	$(TOOLS)/hash.c
+		cc $(NO_ALIAS) $(TOOLS)/hash.c
+
+hashadd.obj :	$(TOOLS)/hashadd.c
+		cc $(COMPSW) $(TOOLS)/hashadd.c
+
+hashpjw.obj :	$(TOOLS)/hashpjw.c
+		cc $(COMPSW) $(TOOLS)/hashpjw.c
+
+mean.obj :	$(TOOLS)/mean.c
+		cc $(COMPSW) $(TOOLS)/mean.c
+
+memiset.obj :	$(TOOLS)/memiset.c
+		cc $(COMPSW) $(TOOLS)/memiset.c
+
+movefile.obj :	$(TOOLS)/movefile.c
+		cc $(COMPSW) $(TOOLS)/movefile.c
+
+pairs.obj :	pairs.c
+		cc $(COMPSW) $(HERE)/pairs.c
+
+print_ar.obj :	print_ar.c
+		cc $(COMPSW) $(HERE)/print_ar.c
+
+printv.obj :	$(TOOLS)/printv.c
+		cc $(COMPSW) $(TOOLS)/printv.c
+
+prnt.obj :	$(TOOLS)/prnt.c
+		cc $(COMPSW) $(TOOLS)/prnt.c
+
+pchar.obj :	$(TOOLS)/pchar.c
+		cc $(COMPSW) $(TOOLS)/pchar.c
+
+searchen.obj :	$(TOOLS)/searchen.c
+		cc $(COMPSW) $(TOOLS)/searchen.c
+
+set.obj :	$(TOOLS)/set.c
+		cc $(COMPSW) $(TOOLS)/set.c
+
+stol.obj :	$(TOOLS)/stol.c
+		cc $(COMPSW) $(TOOLS)/stol.c
+
+assort.obj :	$(TOOLS)/assort.c
+		cc $(COMPSW) $(TOOLS)/assort.c
+
+ssort.obj :	$(TOOLS)/ssort.c
+		cc $(COMPSW) $(TOOLS)/ssort.c
+
+#-----------------------------------------------------------------------
+# The objects that follow are the lex and yacc run-time library
+
+input.obj :	input.c
+		cc $(NO_ALIAS) $(HERE)/input.c
+
+yyhook_a.obj :	yyhook_a.c
+		cc $(COMPSW) $(HERE)/yyhook_a.c
+
+yyhook_b.obj :	yyhook_b.c
+		cc $(COMPSW) $(HERE)/yyhook_b.c
+
+yymain.obj :	yymain.c
+		cc $(COMPSW) $(HERE)/yymain.c
+
+yypstk.obj :	yypstk.c
+		cc $(COMPSW) $(HERE)/yypstk.c
+
+yywrap.obj :	yywrap.c
+		cc $(COMPSW) $(HERE)/yywrap.c
+
+yydebug.obj :	yydebug.c
+		cc $(COMPSW) $(HERE)/yydebug.c
+
+yyinitlx.obj :	yyinitlx.c
+		cc $(COMPSW) $(HERE)/yyinitlx.c
+
+yyinitox.obj :	yyinitox.c
+		cc $(COMPSW) $(HERE)/yyinitox.c
+
+yyinitll.obj :	yyinitll.c
+		cc $(COMPSW) $(HERE)/yyinitll.c

@@ -1,0 +1,97 @@
+#@A (C) 1992 Allen I. Holub 
+
+# Makefile to create LeX with Microsoft C 7.0 and nmake
+
+OBJ1 = lex.obj squash.obj minimize.obj dfa.obj input.obj nfa.obj
+OBJ2 = print.obj printnfa.obj signon.obj terp.obj
+D    =
+
+# Add -DMAP_MALLOC to CFLAGS if you wan't malloc checking
+
+CFLAGS  = -Zi -Ox     -c -AC $(D)
+CFLAGS2 = -Zi -Ox -Oa -c -AC $(D)
+
+.c.obj :
+	 cc $(CFLAGS) $*.c
+
+#--------------------------------------------------------------
+
+lex.exe :  $(OBJ1) $(OBJ2)
+	link /CP:1 /NOI /CO @<<
+$(OBJ1) +
+$(OBJ2)
+lex
+nul
+\lib\compc.lib
+nul
+<<
+
+#--------------------------------------------------------------
+
+final :  $(OBJ1) $(OBJ2)
+	link /CP:1 /NOI @<<
+$(OBJ1) +
+$(OBJ2)
+lex
+nul
+\lib\compc.lib
+nul
+<<
+
+#--------------------------------------------------------------
+# Test LeX by building a llama lexical analyzer. There's a test main()
+# in parser.lex that's created if MAIN is defined.
+
+lexyy.exe : lexyy.obj
+	link /CP:1 /NOI /CO @<<
+lexyy.obj
+lexyy
+lexyy
+\lib\l.lib
+nul
+<<
+
+lexyy.obj : lexyy.c
+	cc -Zi -Os -c -DMAIN lexyy.c
+
+lexyy.c : /src/compiler/parser/parser.lex
+	lex -v /src/compiler/parser/parser.lex
+
+#--------------------------------------------------------------
+
+all : nfa.exe terp.exe dfa.exe lex.exe
+
+#--------------------------------------------------------------
+
+dfa.exe :	dfa.c nfa.obj terp.obj printnfa.obj print.obj
+		cc $(CFLAGS) -DDEBUG -DMAIN dfa.c
+		cc dfa.obj nfa.obj terp.obj printnfa.obj print.obj \
+		  				-link \lib\compc.lib /CO
+		touch dfa.c
+
+terp.exe :	terp.c nfa.obj printnfa.obj
+		cc $(CFLAGS) -DMAIN terp.c
+		cc terp.obj nfa.obj printnfa.obj -link \lib\compc.lib /CO
+		touch terp.c
+
+nfa.exe :	nfa.c printnfa.obj
+		cc $(CFLAGS) -DDEBUG -DMAIN nfa.c
+		cc nfa.obj printnfa.obj -link \lib\compc.lib /CO
+		touch nfa.c
+
+# ----------------------------------------------------------------------
+
+input.obj :	input.c			      globals.h
+lex.obj :	lex.c		dfa.h  nfa.h  globals.h
+minimize.obj :	minimize.c 	dfa.h 	      globals.h
+nfa.obj :	nfa.c		       nfa.h  globals.h
+print.obj :	print.c		dfa.h  nfa.h  globals.h
+printnfa.obj :	printnfa.c 	       nfa.h
+signon.obj :	signon.c
+squash.obj :	squash.c 	dfa.h 	      globals.h
+
+dfa.obj :	dfa.c		dfa.h 	      globals.h
+		cc $(CFLAGS2)	dfa.c
+
+terp.obj :	terp.c		nfa.h 	      globals.h
+		cc $(CFLAGS2)	terp.c

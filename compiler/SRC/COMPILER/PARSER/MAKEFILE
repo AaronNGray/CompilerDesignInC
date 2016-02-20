@@ -1,0 +1,139 @@
+#@A (C) 1992 Allen I. Holub 
+
+#------------------------------------------------------------
+# Uncomment :
+#	B    if you're using NuMega's Bounds Checker.
+#	WIN  to include windowing environement in llama/occs itself
+#	     (as compared to the llama/occs output file)
+#	M    to provide runtime checking of malloc()/free() operations
+#	     (use this only if you have the dmalloc sources from Dr.
+#	     Dobb's article.)
+#
+# B   = \lib\bc4.obj
+# WIN = -D
+# M   = -DMAP_MALLOC
+#------------------------------------------------------------
+# Use this makefile to manufacture occs with Microsoft C 7.0 and nmake
+# as follows :
+#
+# (1) Make a recursive-descent version of llama by uncommenting the
+#     first group of definitions below. Also, uncomment the
+#     LLPAR = llpar.obj definition. Run nmake.
+#
+# (2) Make a full implementation of llama by changing the LLPAR
+#     definition to LLPAR=llout.obj. Run nmake again. Note that
+#     LLAMA will spit out two warnings about WHITESPACE and OTHER
+#     not used. Ignore these warnings --- the tokens are used in
+#     the occs parser.
+#
+# (3) Make occs by commenting out the first block of definitions (the
+#     one used to make llama, and then uncommenting the "OCCS, Medium
+#     model" definitions just below. Next, delete all the .obj files
+#     in the current directory so that they'll be remade in compact-model
+#     versions. Finally, run nmake a third time.
+
+#				Compile LLAMA, Small model
+PROG	= -DLLAMA
+CFLAGS	= -c -Ox -Oa $(D) $(M)
+CLIB	= comp.lib l.lib
+LLPAR	= llpar.obj
+#			LLPAR	= llout.obj
+target : llama.exe
+
+#				Compile OCCS, Medium model
+# PROG	 = -DOCCS
+# CFLAGS = -AC -Zi -c -Ox -Oa $(D) $(M)
+# CLIB	 = compc.lib lc.lib cursesc.lib termlibc.lib
+# target : occs.exe
+
+#----------------------------------------------------------------------
+# Compile OCCS, Small model (for debugging occs)
+#
+# The "Occs, Small model" is useful only for debugging. A small-model
+# version of occs can't handle realistic grammars.
+#
+# PROG 	 = -DOCCS
+# CFLAGS = -c -Zi -Os $(D) $(M)
+# CLIB	= comp.lib l.lib
+# target : occs.exe
+
+# ============================================================
+# COMOBJ are objects shared by llama and occs
+# LLOBJ  are objects used only by llama
+# YYOBJ  are objects used only by occs
+
+COMOBJ = main.obj acts.obj lexyy.obj first.obj stok.obj
+LLOBJ  = llselect.obj llcode.obj lldriver.obj follow.obj lldollar.obj
+YYOBJ  = yypatch.obj yycode.obj yydriver.obj yystate.obj yydollar.obj
+
+# ------------------------------------------------------------
+
+.c.obj :
+	cc $(PROG) $(CFLAGS) $*.c
+
+#------------------------------------------------------------
+
+llama.exe :  $(LLPAR) $(LLOBJ) $(COMOBJ) signon.c
+	cc $(PROG) $(CFLAGS) signon.c
+	link /CP:1 /NOI /NOE /CO @<<
+$(LLPAR) +
+$(COMOBJ) signon.obj +
+$(LLOBJ) $(B)
+llama
+nul
+$(CLIB) + curses.lib + termlib.lib
+nul
+<<
+
+#------------------------------------------------------------
+
+occs.exe :   llout.obj $(YYOBJ) $(COMOBJ) signon.c
+	  cc $(PROG) $(CFLAGS) signon.c
+	  link /CP:1 /NOI /NOE /CO /MAP @<<
+llout.obj +
+$(COMOBJ) signon.obj +
+$(YYOBJ) $(B)
+occs
+occs
+$(CLIB)
+nul
+<<
+
+final :	llout.obj $(COMOBJ) $(YYOBJ) signon.c
+	  cc $(PROG) $(CFLAGS) signon.c
+	  link /CP:1 /NOI /NOE /EXEPACK @<<
+llout.obj +
+$(COMOBJ) signon.obj +
+$(YYOBJ)
+occs.exe
+nul
+$(CLIB)
+nul
+<<
+
+# ----------------------------------------------------------------------
+
+first.obj :	first.c	   parser.h
+follow.obj :	follow.c   parser.h
+acts.obj :	acts.c	   parser.h
+main.obj :	main.c	   parser.h
+stok.obj :	stok.c 	   parser.h
+yypatch.obj :	yypatch.c  parser.h
+yycode.obj :	yycode.c   parser.h
+yydriver.obj :	yydriver.c parser.h
+yystate.obj :	yystate.c  parser.h
+yydollar.obj :	yydollar.c parser.h
+
+llselect.obj :	llselect.c parser.h
+llcode.obj :	llcode.c   parser.h
+lldriver.obj :	lldriver.c parser.h
+llpar.obj :	llpar.c	   parser.h
+lldollar.obj :	lldollar.c parser.h
+
+llout.obj :	llout.c parser.h
+lexyy.obj :	lexyy.c parser.h
+lexyy.c :	parser.lex
+		lex -vl parser.lex
+
+llout.c :	parser.lma
+		llama -vl $(WIN) parser.lma

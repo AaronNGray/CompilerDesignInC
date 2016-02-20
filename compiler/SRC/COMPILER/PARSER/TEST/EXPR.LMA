@@ -1,0 +1,96 @@
+/*@A (C) 1992 Allen I. Holub                                                */
+   /* This is the llama input file for the expression compiler.
+   */
+
+%term  PLUS 		/*  +					*/
+       TIMES		/*  *					*/
+%term  NUM_OR_ID	/*  a number or identifier		*/
+%term  LP		/*  (					*/
+%term  RP		/*  )					*/
+%term  SEMI		/*  ;					*/
+
+%{
+#include <tools/debug.h>
+
+/*------------------------------------------------------------
+ * Rvalue names are stored on a stack. name() pops a name off the stack and
+ * freename(x) puts it back. A real compiler would do some checking for
+ * stack overflow here but there's no point in cluttering the code for now.
+ */
+
+char *Namepool[] =
+{
+    "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8", "t9"
+};
+char **Namep = Namepool ;
+
+char *newname P((void))     	     { return(*Namep++);     }
+UNIX( char *freename (x) char *x;  )
+ANSI( char *freename (   char *x ) ) { return(*--Namep = x); }
+
+extern char *yytext;
+extern int  yyleng;
+
+#define YYSTYPE char*
+%}
+
+%synch SEMI RP
+
+%%
+/* A small expression grammar that recognizes numbers, names, addition (+),
+ * multiplication (*), and parentheses. Expressions associate left to right
+ * unless parentheses force it to go otherwise. * is higher precedence than +
+ */
+
+stmt	:	/* eps */
+	|	{$1=$2=newname();} expr {freename($0);} SEMI stmt
+	;
+
+expr	:	term expr'
+	;
+
+expr'	: 	PLUS {$1=$2=newname();} term
+			{ yycode("%s+=%s\n", $$, $0); freename($0); } expr'
+	|	/* epsilon */
+	;
+
+term	:	factor term'
+	;
+
+term'	:	TIMES {$1=$2=newname();} factor
+			{ yycode("%s*=%s\n", $$, $0); freename($0);} term'
+	|	/* epsilon */
+	;
+
+factor	:	NUM_OR_ID { yycode("%s=%0.*s\n", $$, yyleng, yytext); }
+	|	LP expr RP
+	;
+%%
+/*------------------------------------------------------------*/
+
+void yy_init_llama( p )
+void *p;
+{
+    ((yyvstype *)p)->left = ((yyvstype *)p)->right = "-" ;
+}
+
+#ifdef __TURBOC__
+#pragma argsused
+#endif
+
+char *yypstk(tovs, tods)
+void *tovs;
+char *tods;
+{
+    static char buf[128];
+    sprintf(buf,"[%s,%s]", ((yyvstype *)tovs)->left, ((yyvstype *)tovs)->right);
+    return buf;
+}
+
+void main( argc, argv )
+char	**argv;
+{
+    yy_get_args( argc, argv );
+    yyparse();
+    exit( 0 );
+}

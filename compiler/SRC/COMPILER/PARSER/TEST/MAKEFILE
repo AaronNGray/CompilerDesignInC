@@ -1,0 +1,51 @@
+#@A (C) 1992 Allen I. Holub 
+# This makefile puts together the expression compiler. The Microsoft C
+# compiler is used, and I've assumed that you've added whatever directory
+# holds l.lib curses.lib comp.lib and termlib.lib to your LIB environment.
+#
+# Use "make yyexpr.exe" to make the occs  version.
+# Use "make llexpr.exe" to make the llama version.
+#
+
+# These libraries must be on the path specified in the LIB environment
+
+L       = l
+COMP    = comp
+CURSES  = curses
+TERMLIB = termlib
+
+CC     = cl
+CFLAGS = -c
+
+# OCCS  = \bin\occs.exe
+OCCS=d:\bin\occs
+LLAMA=d:\bin\llama
+LEX=d:\bin\lex
+
+#
+.c.obj :
+    $(CC) $(CFLAGS) $*.c
+
+yyexpr.exe : yyout.obj lexyy.obj
+    $(CC) -o yyexpr.exe yyout.obj lexyy.obj -link /NOE/CPA:1 $(L) $(COMP) \
+							$(CURSES) $(TERMLIB)
+yyout.obj : yyout.c
+yyout.c :   expr.y
+    $(OCCS) -vDl expr.y
+
+lexyy.obj : lexyy.c
+lexyy.c :   expr.lex
+    $(LEX) -vl expr.lex
+#				the mv a b calls, below, rename a to b.
+
+llexpr.exe : llout.obj llexyy.obj
+    $(CC) -o llexpr.exe llout.obj llexyy.obj -link /NOE/CPA:1 $(L) $(COMP) \
+							$(CURSES) $(TERMLIB)
+llexyy.obj : llexyy.c
+llexyy.c :   llexpr.lex
+    $(LEX) -vl llexpr.lex
+    mv lexyy.c llexyy.c
+
+llout.obj : llout.c
+llout.c :   expr.lma
+    $(LLAMA) -vDl expr.lma

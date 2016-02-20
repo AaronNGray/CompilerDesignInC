@@ -1,0 +1,571 @@
+#define __TIME__ "14:59:39"
+#define __DATE__ "Mar 11 1992"
+#define __STDC__ 0
+                                                                              
+
+                                                                
+                                     
+   
+
+#include <stdio.h>
+#include <string.h> 	                                            	     
+#include <stdlib.h>	                                                     
+			                                        	     
+#ifndef va_start
+#include <stdarg.h>
+#endif
+
+#include <tools/debug.h>                                                     
+#include <tools/l.h>	                                                     
+			                                                     
+			                                                     
+			                                          	     
+			                                                     
+			                        			     
+			                                            	     
+			                              			     
+
+extern int	yylineno;			                      
+extern int	yyleng;
+extern char	*yytext;
+extern int 	yylex    P((void));
+
+void	yycode	    P(( char *fmt, ...	));	                        
+void	yydata	    P(( char *fmt, ...	));	                        
+void	yybss 	    P(( char *fmt, ...	));
+void 	yyerror     P(( char *fmt, ...  ));
+void 	yycomment   P(( char *fmt, ...  ));
+int	yy_nextoken P(( void		));
+
+@@  Stuff from code blocks in the header part of the LLama input file goes here.
+@@  LLama removes all lines that begin with @@ when it copies llout.par
+@@  to the output file.
+
+
+
+
+
+
+typedef unsigned char   YY_TTYPE;	                         	  
+
+#define YYF	(YY_TTYPE)( -1 )	                                  
+
+                                                                          
+#define YY_ISTERM(x)    (YY_MINTERM    <= (x) && (x) <= YY_MAXTERM   )
+#define YY_ISNONTERM(x) (YY_MINNONTERM <= (x) && (x) <= YY_MAXNONTERM)
+#define YY_ISACT(x)     (YY_MINACT     <= (x)                        )
+
+#ifndef YYACCEPT
+#    define YYACCEPT return(0)	                                       	       
+#endif
+
+#ifndef YYABORT
+#    define YYABORT return(1)	                                       	       
+#endif
+
+#ifndef YYPRIVATE
+#    define YYPRIVATE static	                                               
+#endif
+
+#ifndef YYMAXERR
+#    define YYMAXERR 25  	                                            
+#endif
+
+#ifndef YYMAXDEPTH           	                                	    
+#    define YYMAXDEPTH 128
+#endif
+
+#ifndef YYSTYPE           	                                            
+#    define YYSTYPE int
+#endif
+
+int 	 yy_act  ( int actnum );		                       
+YY_TTYPE yy_next ( int cur_state, unsigned c );
+
+                                                                        
+                          
+   
+
+                                                                              
+                                                                              
+
+                                                                              
+                                                                              
+
+                                                                              
+#ifndef __YYSTACK_H
+
+            	                                                    
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif                  
+
+
+                                                                   
+                                                                          
+   
+
+static int yyabort P((void)) { exit(1); BCC( return 0; ) }
+
+
+#define  yystk_cls YYPRIVATE
+
+#define  yystk_err(o)  ((o) ? (yyerror("Stack overflow\n" ),yyabort())	: (yyerror("Stack underflow\n"),yyabort()) )
+
+
+
+
+typedef int yyt_Yy_stack; yystk_cls yyt_Yy_stack Yy_stack[YYMAXDEPTH]; yystk_cls yyt_Yy_stack (*yyp_Yy_stack) = Yy_stack + (YYMAXDEPTH);
+
+typedef struct			                                       
+{
+    YYSTYPE  left;		                                                
+    YYSTYPE  right;		                                                
+
+} yyvstype;
+
+
+yyvstype Yy_vstack[ YYMAXDEPTH ]; 		               		  
+yyvstype *Yy_vsp = Yy_vstack + YYMAXDEPTH;	                      	  
+
+@@
+@@ Tables go here. LLama removes all lines that begin with @@ when it copies
+@@ 						   llout.par to the output file.
+
+
+
+
+
+                                                                          
+
+FILE  *yycodeout = stdout ;	                           		   
+FILE  *yybssout  = stdout ;	                                       	   
+FILE  *yydataout = stdout ;	                                           
+int   yynerrs    = 0;		               	 			   
+
+                                                                          
+#ifdef YYDEBUG                  	                            
+
+typedef char yyt_Yy_dstack; yystk_cls yyt_Yy_dstack Yy_dstack[YYMAXDEPTH]; yystk_cls yyt_Yy_dstack (*yyp_Yy_dstack) = Yy_dstack + (YYMAXDEPTH);
+
+ANSI( YYPRIVATE char *yy_sym( int sym )	)
+KnR ( YYPRIVATE char *yy_sym(     sym )	)
+KnR ( int sym;				)
+{
+                                                                      
+                                                       
+       
+
+    return ( YY_ISTERM( sym ) || !sym ) ?   Yy_stok     [sym]:
+           ( YY_ISNONTERM( sym )      ) ?   Yy_snonterm [sym - YY_MINNONTERM]:
+                                            Yy_sact     [sym - YY_MINACT] ;
+}
+
+                                                                         
+                                                                               
+                                                                       
+                                                                              
+                                                                             
+                                                                             
+                                                                               
+                    
+   
+
+ANSI( YYPRIVATE  void yy_push(int x, YYSTYPE val) 	)
+KnR ( YYPRIVATE  void yy_push(    x,         val) 	)
+KnR ( int	   x;   )		                                        
+KnR ( YYSTYPE	   val;	)		                                        
+{
+    ( ( (yyp_Yy_stack) <= Yy_stack )? ((yyt_Yy_stack)(long)(yystk_err(1))) : ( *--yyp_Yy_stack = (x) ));
+    ( *--yyp_Yy_dstack = (yy_sym(x)) );
+
+    --Yy_vsp;					                                
+    Yy_vsp->left = Yy_vsp->right = val;		                                
+
+    yycomment( "push %s\n", yy_sym( x )  );
+    yy_pstack( 0, 1 );
+}
+
+YYPRIVATE int yy_pop P((void))
+{
+    int prev_tos = ( ( (yyp_Yy_stack) >= (Yy_stack + sizeof(Yy_stack)/sizeof(*Yy_stack)) )? ((yyt_Yy_stack )(long)(yystk_err(0))) : ( *yyp_Yy_stack++ ));
+    ++Yy_vsp;
+
+    yycomment( "pop %s\n", ( *yyp_Yy_dstack++ ));
+    yy_pstack ( 0, 1 );
+
+    return prev_tos;
+}
+
+ANSI( YYPRIVATE void yy_say_whats_happening(int tos_item, int production) )
+KnR ( YYPRIVATE void yy_say_whats_happening(    tos_item,     production) )
+KnR ( int tos_item;   	)                         		    
+KnR ( int production; 	)                                             
+{
+                                                                             
+                                                                          
+                                                                              
+                                                                             
+                                                                            
+                                                                              
+                                                                         
+                                                                       
+       			                       
+                                                                        
+                                                                          
+                                                                         
+                                                                 
+       
+
+    char  buf[80];	                                                        
+    int	  count;                                                    	        
+    int   *start, *end;                                                         
+    int   nterms;	                                                        
+
+    start = Yy_pushtab[ production ];
+    for( end = start; *end; ++end )                                        
+	;				                                   
+
+    count = sizeof(buf);
+    *buf  = '\0';
+    for(nterms = end - start; --nterms >= 0 && count > 0 ; ) 	              
+    {								              
+	strncat( buf, yy_sym(*--end), count );
+	if( (count -= strlen( yy_sym(*end) + 1 )) < 1 )
+	    break;
+	strncat( buf, " ", --count );
+    }
+    yycomment( "Applying %s->%s\n", yy_sym(tos_item), buf );
+}
+
+                                                                           
+                                                                         
+                                                                              
+                                                                     
+                                                                             
+                                                                           
+                                                                           
+                                           
+   
+
+ANSI( void yycode( char *fmt, ...))                                        
+KnR ( void yycode(       fmt     ))
+KnR ( char         *fmt;     )
+{
+    va_list   	 args;
+    va_start( args,  fmt );
+    yy_output( 0, fmt, args );
+}
+
+ANSI( void yydata( char *fmt, ...))                                        
+KnR ( void yydata(       fmt     ))
+KnR ( char         	*fmt;     )
+{
+    va_list   	 args;
+    va_start( args,  fmt );
+    yy_output( 1, fmt, args );
+}
+
+ANSI( void yybss ( char *fmt, ...))                                        
+KnR ( void yybss (       fmt     ))
+KnR ( char         	*fmt;     )
+{
+    va_list   	 args;
+    va_start( args,  fmt );
+    yy_output( 2, fmt, args );
+}
+
+                                                                               
+                                                                             
+                                                                         
+                                                                                
+                                                                              
+                                                                            
+                                                
+   
+
+#else                                                                  
+
+#    define  yy_push(x,v)  	( ( ( (yyp_Yy_stack) <= Yy_stack )? ((yyt_Yy_stack)(long)(yystk_err(1))) : ( *--yyp_Yy_stack = (x) )),	--Yy_vsp, Yy_vsp->left=Yy_vsp->right=v )
+
+#    define  yy_pop()    	( ++Yy_vsp, ( ( (yyp_Yy_stack) >= (Yy_stack + sizeof(Yy_stack)/sizeof(*Yy_stack)) )? ((yyt_Yy_stack)(long)(yystk_err(0))) : ( *yyp_Yy_stack++ )))
+#    define  yy_nextoken()	yylex()
+#    define  yy_quit_debug()
+#    define  yy_sym()
+#    define  yy_say_whats_happening(tos_item,prod)
+#    define  yy_redraw_stack()
+#    define  yy_pstack(refresh,print_it)
+#    define  yy_break(x)
+
+#ifndef va_list
+#    include <stdarg.h>
+#else
+#    ifdef va_dcl
+	MUST USE ANSI VARIABLE-ARGUMENT CONVENTIONS IN <stdarg.h>
+#    endif
+#endif
+
+ANSI( void  yycode( char *fmt, ...))                                        
+KnR ( void  yycode(       fmt     ))
+KnR ( char         	 *fmt;     )
+{
+    va_list args;
+    va_start( args,      fmt );
+    vfprintf( yycodeout, fmt, args );
+}
+
+ANSI( void  yydata( char *fmt, ...))                                        
+KnR ( void  yydata(       fmt     ))
+KnR ( char         	 *fmt;     )
+{
+    va_list args;
+    va_start( args,  fmt );
+    vfprintf( yydataout, fmt, args );
+}
+
+ANSI( void  yybss ( char *fmt, ...))                                        
+KnR ( void  yybss (       fmt     ))
+KnR ( char         	 *fmt;     )
+{
+    va_list args;
+    va_start( args,  fmt );
+    vfprintf( yybssout, fmt, args );
+}
+
+ANSI( void  yycomment( char *fmt, ... )	)
+KnR ( void  yycomment( fmt )		)
+KnR ( char *fmt;			)
+{
+    va_list args;
+    va_start( args,   fmt );
+    vfprintf( stdout, fmt, args );
+}
+
+ANSI( void  yyerror( char *fmt, ... )	)
+KnR ( void  yyerror( fmt )		)
+KnR ( char  *fmt;			)
+{
+    va_list   args;
+    extern char *yytext;
+    extern int  yylineno;
+
+    va_start( args, fmt );
+    fprintf ( stderr, "ERROR (line %d near %s): ", yylineno, yytext );
+    vfprintf( stderr, fmt, args );
+    fprintf ( stderr, "\n" );
+}
+#endif
+
+
+                                                              
+                   
+   
+
+ANSI( YYPRIVATE yy_in_synch( int sym )	)
+KnR ( YYPRIVATE yy_in_synch( sym )	)
+KnR ( int sym;				)
+{
+                                                                             
+
+    int *p ;
+
+    for( p = Yy_synch; *p  &&  *p > 0 ; p++ )
+        if( *p == sym )
+             return 1;
+    return 0;
+}
+
+ANSI( YYPRIVATE yy_synch( int lookahead )	)
+KnR ( YYPRIVATE yy_synch( lookahead 	)	)
+KnR ( int sym;					)
+{
+                                                                             
+                                                                                
+                                                                             
+                                  
+     
+                                                                              
+     	       
+                                                                               
+                              
+                                                                             
+                                                                              
+      
+
+    int    tok;
+
+    if( ++yynerrs > YYMAXERR )
+        return 0;
+
+    while( !yy_in_synch( tok = ( *(yyp_Yy_stack + (0)) ))	&& !( (yyp_Yy_stack) >= (Yy_stack + sizeof(Yy_stack)/sizeof(*Yy_stack)) ))	       
+	yy_pop();
+
+    if( ( (yyp_Yy_stack) >= (Yy_stack + sizeof(Yy_stack)/sizeof(*Yy_stack)) ))						       
+        return 0;
+
+    while( lookahead && lookahead != tok )				       
+        lookahead = yy_nextoken();
+
+    return lookahead;
+}
+
+                                                                       
+                                                                             
+                                                                           
+   
+
+ANSI( int yyparse (void)	)
+KnR ( int yyparse (    )	)
+{
+    int      *p;		                                  	    
+    YY_TTYPE prod;		                                  	    
+    int      lookahead;		                                 	    
+    int	     errcode = 0;	                                  	    
+    int	     tchar;		                                      	    
+    int	     actual_lineno;	                            		    
+    char     *actual_text;	                          		    
+    int	     actual_leng;	                            		    
+    YYSTYPE  val;		                                       	    
+
+#   ifdef YYDEBUG
+	if( !yy_init_debug( Yy_stack,  &yyp_Yy_stack,
+			    Yy_dstack, &yyp_Yy_dstack,
+			    Yy_vstack, sizeof(yyvstype), YYMAXDEPTH) )
+	    YYABORT;
+
+	( (yyp_Yy_dstack) = (Yy_dstack + sizeof(Yy_dstack)/sizeof(*Yy_dstack)) );
+#   endif
+
+    ( (yyp_Yy_stack) = (Yy_stack + sizeof(Yy_stack)/sizeof(*Yy_stack)) );
+    Yy_vsp = Yy_vstack + YYMAXDEPTH;
+
+    yy_push( YY_START_STATE, (Yy_vsp-1)->left );                              
+						                              
+						                              
+    yy_init_llama( Yy_vsp );			                              
+    lookahead = yy_nextoken();
+
+    while( !( (yyp_Yy_stack) >= (Yy_stack + sizeof(Yy_stack)/sizeof(*Yy_stack)) ))
+    {
+        if( YY_ISACT( ( *(yyp_Yy_stack + (0)) )) )	                                
+	{					                                
+	    if( yytext = (char *) ii_ptext() )
+	    {
+		yylineno       = ii_plineno() ;
+		tchar          = yytext[ yyleng = ii_plength() ];
+		yytext[yyleng] = '\0' ;
+	    }
+	    else				                       
+	    {
+		yytext = "";
+		yyleng = yylineno = 0;
+	    }
+
+	    if( errcode = yy_act( ( *(yyp_Yy_stack + (0)) )))
+		return errcode;
+
+	    yy_pop();
+	    yy_redraw_stack();
+	    if( yylineno )
+		ii_ptext()[ ii_plength() ] = tchar;
+	}
+        else if( YY_ISTERM( ( *(yyp_Yy_stack + (0)) )))	                                
+        {
+            if( ( *(yyp_Yy_stack + (0)) )!= lookahead ) 	                                
+            {
+                yyerror( "%s expected\n", Yy_stok[ ( *(yyp_Yy_stack + (0)) )]);
+                if( !(lookahead = yy_synch(lookahead)) )
+		    YYABORT;
+            }
+            else
+            {
+                                                                            
+		                                                           
+		                                              
+                   
+
+                yy_pop();
+		ii_mark_prev();
+
+                lookahead     = yy_nextoken();
+		actual_lineno = yylineno;
+		actual_text   = yytext  ;
+		actual_leng   = yyleng  ;
+            }
+        }
+        else
+        {
+	                                                                      
+	                                                                
+	                                                                    
+	                                                                     
+	                                                                     
+	                                                  
+	       
+
+            prod = yy_next( ( *(yyp_Yy_stack + (0)) )-YY_MINNONTERM, lookahead );
+
+            if( prod == YYF )
+            {
+                yyerror( "Unexpected %s\n", Yy_stok[ lookahead ] );
+                if( !(lookahead = yy_synch(lookahead)) )
+		    YYABORT;
+            }
+            else
+            {
+		yy_say_whats_happening( ( *(yyp_Yy_stack + (0)) ), prod );
+		yy_break( prod );
+
+		val = Yy_vsp->right ;
+                yy_pop();
+
+                for( p = Yy_pushtab[ prod ] ; *p ; ++p )
+                    yy_push( *p, val );
+            }
+        }
+    }
+
+    yylineno = actual_lineno ;	                                                
+    yytext   = actual_text   ;                                                  
+    yyleng   = actual_leng   ;                        			        
+
+    yy_quit_debug();
+    YYACCEPT;
+}

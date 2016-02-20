@@ -1,0 +1,593 @@
+#define __TIME__ "14:59:41"
+#define __DATE__ "Mar 11 1992"
+#define __STDC__ 0
+                                                                              
+
+  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  @ This section goes at the top of the file, before any user-supplied	@
+  @ code is emitted. It is output regardless of the presence of -a or -p @
+  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+#include <stdio.h>
+#include <stdarg.h>
+                                                                              
+                                                                              
+
+                                                                              
+                                                                              
+
+                                                                              
+#ifndef __YYSTACK_H
+
+            	                                                    
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif                  
+
+
+#include <stdlib.h>	                                                     
+			                                        	     
+
+#include <tools/debug.h>                                                     
+#include <tools/l.h>	                                                     
+			                                                     
+			                                                     
+			                                          	     
+			                                                     
+			                        			     
+			                                            	     
+			                              			     
+
+FILE  *yycodeout = stdout ;		                           
+FILE  *yybssout  = stdout ;		                           
+FILE  *yydataout = stdout ;		                           
+int   yylookahead ;			                           
+
+extern char *yytext;			                                
+extern int  yylineno;
+extern int  yyleng;
+
+void	yycode	    P(( char *fmt, ...	));	                        
+void	yydata	    P(( char *fmt, ...	));	                        
+void	yybss 	    P(( char *fmt, ...	));
+void 	yyerror     P(( char *fmt, ...  ));
+void 	yycomment   P(( char *fmt, ...  ));
+int	yy_nextoken P(( void		));
+
+
+extern unsigned char *ii_ptext();	                                    
+extern int  ii_plength() ;		                                    
+extern int  ii_plineno() ;
+
+#ifdef YYDEBUG			                                            
+#   define YYD(x) x		                               		    
+#else
+#   define YYD(x)            
+#endif
+
+                                                                          
+
+
+  @
+  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  @ User-supplied code from the header part of the input file goes here.  @
+  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  @
+
+
+
+#ifdef YYDEBUG			                                               
+#   define YYD(x) x		                                 	       
+#   define printf  yycode	                                               
+#else
+#   define YYD(x)            
+#endif
+
+#ifndef YYACCEPT
+#    define YYACCEPT return(0)	                                       	       
+#endif
+
+#ifndef YYABORT
+#    define YYABORT return(1)	                                       	       
+#endif
+
+#ifndef YYPRIVATE
+#    define YYPRIVATE static	                                               
+#endif
+
+#ifndef YYMAXERR
+#    define YYMAXERR 25      	                                	       
+#endif
+
+#ifndef YYMAXDEPTH           	                                	       
+#    define YYMAXDEPTH 128
+#endif
+
+#ifndef YYCASCADE           	                                               
+#    define YYCASCADE 5
+#endif
+
+#ifndef YYSTYPE		     	                            		       
+#    define YYSTYPE int
+#endif
+				                                     	  
+#ifndef YYSHIFTACT
+#    define YYSHIFTACT(tos)  ( (tos)[0] = yylval )
+
+#endif
+
+#ifdef YYVERBOSE
+#    define YYV(x) x
+#else
+#    define YYV(x)
+#endif
+
+
+#define yystk_cls YYPRIVATE		       				     
+
+                                                                         
+                                                                            
+                                                                             
+                                                                            
+                                                                             
+                                                                                
+                                                                           
+                                                         
+  
+                                                                             
+                                         
+   
+
+#define	YY_IS_ACCEPT	0	   	                                    
+#define	YY_IS_SHIFT(s)  ((s) > 0)  	                      		    
+
+typedef short 	YY_TTYPE;
+
+#define YYF	((YY_TTYPE)( (unsigned short )~0 >>1 ))
+
+                                                                        
+                                                                             
+                                                                              
+  
+                                                                           
+                                                                            
+                                                                       
+                                                                        
+   
+
+#if !defined(YYACTION) || !defined(YYPARSER)
+#    define YYP               
+#else
+#    define YYP   YYPRIVATE
+#endif
+
+YYPRIVATE int	  yynerrs = 0;			                                
+
+typedef int yyt_Yy_stack; yystk_cls yyt_Yy_stack Yy_stack[YYMAXDEPTH]; yystk_cls yyt_Yy_stack (*yyp_Yy_stack) = Yy_stack + (YYMAXDEPTH); 	                                
+
+    YYSTYPE yylval;			 	                                
+YYP YYSTYPE Yy_val;				                                
+
+YYP YYSTYPE Yy_vstack[ YYMAXDEPTH ]; 	 	                                
+YYP YYSTYPE *Yy_vsp;				                                
+						                                
+
+YYP int     Yy_rhslen;			 	                                
+						                                
+						                                
+
+                                                       
+
+YY_TTYPE yy_next	P(( YY_TTYPE **table, YY_TTYPE cur_state, int inp ));
+void	 yy_init_stack	P(( void					  ));
+int  	 yy_recover	P(( int tok, int suppress			  ));
+void 	 yy_shift	P(( int new_state, int lookahead		  ));
+int	 yy_act		P(( int yy_production_number, YYSTYPE *yyvsp	  ));
+void	 yy_reduce	P(( int prod_num, int amount			  ));
+
+
+
+  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  @           Action subroutine and the Tables go here.			@
+  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  @ The rest of the file is the actual parser. It's			@
+  @ emitted after the tables but above any user-supplied code in the	@
+  @ third part of the input file.     					@
+  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+YYPRIVATE YY_TTYPE  yy_next( table, cur_state, inp )
+YY_TTYPE  **table;
+YY_TTYPE  cur_state;
+int       inp;
+{
+                                                                            
+                                             
+       
+
+    YY_TTYPE   *p = table[ cur_state ] ;
+    int        i;
+
+    if( p )
+        for( i = (int) *p++; --i >= 0 ; p += 2 )
+            if( inp == p[0] )
+                 return p[1];
+
+    return  YYF;
+}
+
+                                                                          
+#ifdef YYDEBUG
+
+typedef char* yyt_Yy_dstack; yystk_cls yyt_Yy_dstack Yy_dstack[YYMAXDEPTH]; yystk_cls yyt_Yy_dstack (*yyp_Yy_dstack) = Yy_dstack + (YYMAXDEPTH);	                             
+
+ANSI( void 	yycode( char *fmt, ... ))
+KnR ( void 	yycode( fmt )		)
+KnR ( char	*fmt;			)
+{
+    va_list   	 args;
+    va_start( args,  fmt );
+    yy_output( 0, fmt, args );
+}
+
+ANSI( void 	yydata( char *fmt, ... ))
+KnR ( void 	yydata( fmt )		)
+KnR ( char	*fmt;			)
+{
+    va_list   	 args;
+    va_start( args,  fmt );
+    yy_output( 1, fmt, args );
+}
+
+ANSI( void 	yybss( char *fmt, ... ) )
+KnR ( void 	yybss( fmt )		)
+KnR ( char	*fmt;			)
+{
+    va_list   	 args;
+    va_start( args,  fmt );
+    yy_output( 2, fmt, args );
+}
+
+                                                        
+
+#else                                                            
+
+#    define yy_nextoken()	yylex()	                                       
+#    define yy_quit_debug()
+#    define yy_init_debug()
+#    define yy_pstack(x,y)
+#    define yy_sym()
+
+                                                                           
+                                                                             
+                                                                              
+                                                                              
+   
+
+ANSI( void 	yycode( char *fmt, ... ))
+KnR ( void 	yycode( fmt )		)
+KnR ( char	*fmt;			)
+{
+    va_list	args;
+    va_start( args,      fmt );
+    vfprintf( yycodeout, fmt, args );
+}
+
+ANSI( void 	yydata( char *fmt, ... ))
+KnR ( void 	yydata( fmt )		)
+KnR ( char	*fmt;			)
+{
+    va_list	args;
+    va_start( args,  fmt );
+    vfprintf( yydataout, fmt, args );
+}
+
+ANSI( void 	yybss( char *fmt, ... )	)
+KnR ( void 	yybss( fmt )		)
+KnR ( char	*fmt;			)
+{
+    va_list args;
+    va_start( args,  fmt );
+    vfprintf( yybssout, fmt, args );
+}
+
+ANSI( void 	yycomment( char *fmt, ... )	)
+KnR ( void 	yycomment( fmt )		)
+KnR ( char	*fmt;				)
+{
+    va_list	 args;
+    va_start( args,   fmt );
+    vfprintf( stdout, fmt, args );
+}
+
+ANSI( void 	yyerror( char *fmt, ... )	)
+KnR ( void 	yyerror( fmt )			)
+KnR ( char	*fmt;				)
+{
+    extern char *yytext;
+    extern int  yylineno;
+    va_list   args;
+
+    va_start( args, fmt );
+    fprintf ( stderr, "ERROR (line %d near %s): ", yylineno, yytext );
+    vfprintf( stderr, fmt, args );
+    fprintf ( stderr, "\n" );
+}
+#endif
+
+
+
+YYPRIVATE  void yy_shift( new_state, lookahead )          	        
+int	    new_state;				                        
+int	    lookahead;				                        
+{
+    ( ( (yyp_Yy_stack) <= Yy_stack )? ((yyt_Yy_stack)(long)(((1) ? ferr("Stack overflow\n" ) : ferr("Stack underflow\n") ))) : ( *--yyp_Yy_stack = (new_state) ));
+    --Yy_vsp;			 	                                    
+    YYSHIFTACT( Yy_vsp );   		                           	    
+
+#ifdef YYDEBUG
+    yycomment( "Shift %0.16s (%d)\n", Yy_stok[ lookahead ], new_state);
+    ( *--yyp_Yy_dstack = (Yy_stok[lookahead]) );
+    yy_pstack(0, 1);
+#endif
+}
+                                                                          
+YYPRIVATE void yy_reduce( prod_num, amount )
+int	prod_num;		                             		      
+int	amount;			                                              
+{
+    int	next_state;
+
+    ( (((sizeof(Yy_stack)/sizeof(*Yy_stack)) - (yyp_Yy_stack-Yy_stack))< amount) ? ((yyt_Yy_stack)(long)(((0) ? ferr("Stack overflow\n" ) : ferr("Stack underflow\n") ))) : ( (yyp_Yy_stack += amount)[-amount] ));	                                     
+    Yy_vsp += amount;			                       		     
+    *--Yy_vsp = Yy_val;		  	                           	     
+
+    next_state = yy_next( Yy_goto, ( *(yyp_Yy_stack + (0)) ), Yy_lhs[prod_num] );
+
+#ifndef YYDEBUG
+
+    ( *--yyp_Yy_stack = (next_state) );
+
+#else
+
+    yy_break( prod_num );	    	                                    
+
+    ( (yyp_Yy_dstack += amount)[-amount] );
+
+    YYV( yycomment("    pop %d item%s\n", amount, amount==1 ? "" : "s"); )
+    yy_pstack( 0, 0 );
+
+    ( *--yyp_Yy_stack = (next_state 	   ) );
+    ( *--yyp_Yy_dstack = (Yy_slhs[ prod_num ]) );
+
+    YYV( yycomment("    push %0.16s (%d)", Yy_slhs[prod_num], next_state ); )
+
+    yy_pstack ( 0, 1 );
+#endif
+}
+
+                                                                          
+
+YYPRIVATE void yy_init_stack()			                            
+{
+    ( (yyp_Yy_stack) = (Yy_stack + sizeof(Yy_stack)/sizeof(*Yy_stack)) );
+    ( *--yyp_Yy_stack = (0) );		                      	   
+
+    Yy_vsp = Yy_vstack + (YYMAXDEPTH-1);	                           
+
+#   ifdef YYDEBUG
+    ( (yyp_Yy_dstack) = (Yy_dstack + sizeof(Yy_dstack)/sizeof(*Yy_dstack)) );
+    ( *--yyp_Yy_dstack = ("$") );
+    yycomment	 ( "Shift start state\n" );
+    yy_pstack	 (0, 1);			                          
+#   endif
+}
+                                                                          
+YYPRIVATE int yy_recover( tok, suppress )
+int	tok;		                              		  
+int	suppress;	                                          
+{
+    int	        *old_sp  = yyp_Yy_stack;	                              
+    YYD( char  **old_dsp = yyp_Yy_dstack; )
+    YYD( char   *tos;  				 )
+
+    if( !suppress )
+    {
+	yyerror( "Unexpected %s\n", Yy_stok[tok] );
+	if( ++yynerrs > YYMAXERR )
+	{
+	    yyerror("Too many errors, aborting\n");
+	    return 0;
+	}
+    }
+
+    do {
+
+	while( !( (yyp_Yy_stack) >= (Yy_stack + sizeof(Yy_stack)/sizeof(*Yy_stack)) )		    && yy_next( Yy_action, ( *(yyp_Yy_stack + (0)) ), tok) == YYF )
+	{
+	    ( *yyp_Yy_stack++ );
+
+	    YYD( tos = ( *yyp_Yy_dstack++ ); )
+	    YYD( yycomment("Popping %s from state stack\n", tos); )
+	    YYD( yy_pstack(0, 1);				   )
+	}
+
+	if( !( (yyp_Yy_stack) >= (Yy_stack + sizeof(Yy_stack)/sizeof(*Yy_stack)) ))		                            
+	{
+	                                                                  
+	                           
+	       
+
+	    Yy_vsp = Yy_vstack + (YYMAXDEPTH - ((sizeof(Yy_stack)/sizeof(*Yy_stack)) - (yyp_Yy_stack-Yy_stack))) ;
+
+#	    ifdef YYDEBUG
+	    	yyp_Yy_dstack= Yy_dstack +
+					(YYMAXDEPTH - ((sizeof(Yy_stack)/sizeof(*Yy_stack)) - (yyp_Yy_stack-Yy_stack)));
+	   	yycomment("Error recovery successful\n");
+	    	yy_pstack(0, 1);
+#	    endif
+
+	    return tok;
+	}
+
+	yyp_Yy_stack= old_sp ;
+
+	YYD( yyp_Yy_dstack= old_dsp ;			)
+	YYD( yycomment("Restoring state stack."); 		)
+	YYD( yy_pstack(1, 1); 			 		)
+	YYD( yycomment("discarding %s\n", Yy_stok[tok]);   )
+
+    } while( ii_mark_prev(), tok = yy_nextoken() );
+
+    YYD( yycomment("Error recovery failed\n");	)
+    return 0;
+}
+
+                                                                          
+
+int	yyparse()
+{
+                                                                        
+                                                                          
+                              
+       
+
+    int	act_num ;	                                         	  
+    int	errcode ;	                                             	  
+    int tchar   ;	                                            	  
+    int suppress_err ; 	                                                  
+			                                              	  
+			                                         	  
+
+#ifdef YYDEBUG
+    if( !yy_init_debug( Yy_stack,  &yyp_Yy_stack,
+			Yy_dstack, &yyp_Yy_dstack,
+			Yy_vstack, sizeof(YYSTYPE), YYMAXDEPTH) )
+	YYABORT;
+#endif
+
+    yy_init_stack ();			                         	  
+    yy_init_occs  ( Yy_vsp );
+
+    yylookahead  = yy_nextoken();	                         	  
+    suppress_err = 0;
+
+    while( 1 )
+    {
+	act_num = yy_next( Yy_action, ( *(yyp_Yy_stack + (0)) ), yylookahead );
+
+	if( suppress_err )
+	    --suppress_err;
+
+	if( act_num == YYF  )
+	{
+	    if( !(yylookahead = yy_recover( yylookahead, suppress_err )) )
+		YYABORT;
+
+	    suppress_err = YYCASCADE;
+	}
+	else if( YY_IS_SHIFT(act_num) )		                              
+	{
+	                                                                      
+	                                                                 
+	                                                                  
+	                                                      
+	       
+
+	    yy_shift( act_num, yylookahead );
+
+	    ii_mark_prev();
+	    yylookahead = yy_nextoken();
+	}
+	else
+	{
+	                                                                       
+	                                                                      
+	                                                                        
+	                                                                     
+	                                                                    
+	                                                                     
+	                                                                    
+	                                                                     
+	                                                                      
+	                                     
+	      
+	                                                                 
+	                                                                    
+	       
+
+	    act_num   = -act_num ;
+	    Yy_rhslen = Yy_reduce[ act_num  ];
+	    Yy_val    = Yy_vsp[ Yy_rhslen ? Yy_rhslen-1 : 0 ]; 	              
+
+	    if( yytext = (char *) ii_ptext() )			             
+	    {
+		yylineno       = ii_plineno() ;
+		tchar          = yytext[ yyleng = ii_plength() ];
+		yytext[yyleng] = '\0' ;
+	    }
+	    else				                       
+	    {
+		yytext = "";
+		yyleng = yylineno = 0;
+	    }
+
+#	    ifdef YYDEBUG
+	        yycomment("Reduce by (%d) %s->%s\n", act_num,
+					Yy_slhs[act_num], Yy_srhs[act_num]);
+#	    endif
+
+	    if( errcode = yy_act( act_num, Yy_vsp ) )
+		return errcode;
+
+	    if( yylineno )
+		ii_ptext()[ ii_plength() ] = tchar;		              
+
+	    if( act_num == YY_IS_ACCEPT )
+		break ;
+	    else
+		yy_reduce( act_num, Yy_rhslen );
+	}
+    }
+    YYD(  yycomment( "Accept\n" );	)
+    YYD(  yy_quit_debug();		)
+
+    YYACCEPT;
+}
+
