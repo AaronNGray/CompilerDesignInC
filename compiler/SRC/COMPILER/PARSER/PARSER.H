@@ -142,7 +142,7 @@ typedef struct _symbol_
 {
     char	   name  [ NAME_MAX ];		/* symbol name. Must be first */
     char	   field [ NAME_MAX ];		/* %type <field>	      */
-    unsigned	   val;				/* numeric value of symbol    */
+    int     	   val;				/* numeric value of symbol    */
     unsigned	   used;			/* symbol used on an rhs      */
     unsigned	   set;				/* symbol defined             */
     unsigned	   lineno;			/* input line num. of string  */
@@ -207,7 +207,8 @@ CLASS int  Make_parser      I( = 1	   ); /* ==0 if -a on command line    */
 CLASS int  Make_yyoutab     I( = 0	   ); /* ==1 if -T on command line    */
 CLASS int  No_lines	    I( = 0	   ); /* Suppress #lines in output    */
 CLASS int  No_warnings	    I( = 0	   ); /* Suppress warnings if true    */
-CLASS FILE *Output          I( = stdout	   ); /* Output stream.		      */
+//CLASS FILE *Output          I( = stdout	   ); /* Output stream.		      */
+CLASS FILE *Output;
 CLASS int  Public	    I( = 0         ); /* Make static symbols public   */
 CLASS int  Symbols	    I( = 0	   ); /* Generate symbol table.	      */
 CLASS int  Threshold 	    I( = 4	   ); /* Compression threshold	      */
@@ -293,6 +294,9 @@ CLASS int      Num_productions I( = 0          ); /* Number of productions    */
   void	signon		P(( void ));				/* signon.c   */
   void	tables		P(( void ));				/* llcode.c   */
   void	tables		P(( void )); 				/* yycode.c   */
+  void  llinit          P((void));                              /* lex.par */
+  void  yyinit          P((void));                              /* llama.par */
+
   int 	yyparse		P(( void ));				/* llpar.c    */
 
   char	*production_str	P((struct _prod_ *prod));		/* acts.c */

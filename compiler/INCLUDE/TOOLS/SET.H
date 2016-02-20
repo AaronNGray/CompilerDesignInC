@@ -15,9 +15,9 @@ typedef unsigned short     _SETTYPE ;		   /* one cell in bit map   */
 
 typedef struct _set_
 {
-    unsigned char nwords ;		/* Number of words in map	  */
+    char          nwords ;		/* Number of words in map	  */
     unsigned char compl	 ;		/* is a negative true set if true */
-    unsigned	  nbits  ;		/* Number of bits in map	  */
+    int       	  nbits  ;		/* Number of bits in map	  */
     _SETTYPE      *map   ;		/* Pointer to the map		  */
     _SETTYPE      defmap[ _DEFWORDS ];	/* The map itself		  */
 

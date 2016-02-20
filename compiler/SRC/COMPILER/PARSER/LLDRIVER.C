@@ -12,7 +12,7 @@ extern  void file_header	P(( void ));			/* public */
 extern  void code_header	P(( void ));
 extern  void driver		P(( void ));
 /*----------------------------------------------------------------------*/
-PRIVATE FILE	*Driver_file = stderr ;
+PRIVATE FILE	*Driver_file = NULL ;
 
 /*----------------------------------------------------------------------
  * Routines in this file are llama specific. There's a different version
@@ -68,5 +68,6 @@ PUBLIC	void	driver()
      */
 
     driver_2( Output, !No_lines );
-    fclose( Driver_file );
+    if (Driver_file)
+        fclose( Driver_file );
 }

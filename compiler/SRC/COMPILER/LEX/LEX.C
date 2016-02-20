@@ -14,7 +14,7 @@
 #define ALLOC
 #include "globals.h"
 
-#if (0 MSC(+1) )
+#if (0 MSC(+1) && !defined(_WIN32))
    	    /* This pragma puts a copyright message into the executable file */
    #pragma comment(exestr,"(C)" __DATE__ "Allen I. Holub. All rights reserved.")
 #endif

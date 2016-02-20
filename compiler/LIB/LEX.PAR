@@ -61,7 +61,7 @@ unsigned char	*ii_text();
 char   *yytext;		/* Pointer to lexeme.           */
 int    	yyleng;		/* Length of lexeme.            */
 int    	yylineno;	/* Input line number.           */
-FILE	*yyout = stdout;
+FILE	*yyout = NULL;
 
 /*-----------------------------------------------------------------
  * Macros that duplicate functions in UNIX lex:
@@ -81,6 +81,11 @@ FILE	*yyout = stdout;
 		     ( yyleng -= ii_pushback(n) ? n : yyleng ), \
 		       ii_term() \
 		  )
+
+void llinit()
+{
+    yyout = stdout;
+}
 
 int  input P(( void ))		/* This is a macro in UNIX lex 	    */
 {				/* P() is defined in tools/debug.h  */

@@ -340,12 +340,12 @@ SET	*src, *dest;
 
     _SETTYPE	*d;	/* Pointer to destination map	*/
     _SETTYPE	*s;	/* Pointer to map in set1	*/
-    int		ssize;	/* # of words in src set	*/
+    char	ssize;	/* # of words in src set	*/
     int		tail;	/* dest set is this much bigger */
 
     ssize = src->nwords ;
 
-    if( (unsigned)dest->nwords < ssize ) /* Make sure dest set is at least */
+    if( dest->nwords < ssize ) /* Make sure dest set is at least */
 	enlarge( ssize, dest );		 /* as big as the src set.	   */
 
     tail  = dest->nwords - ssize ;

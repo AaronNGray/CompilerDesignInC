@@ -27,7 +27,7 @@
 #    define VA_LIST
 #    define MSDOS
 #else
-#if (defined(MSDOS) || defined(_MSDOS))
+#if (defined(MSDOS) || defined(_MSDOS) || defined(_WIN32))
 #    ifndef MSDOS   		// In case the MSDOS predefinition
 #        define MSDOS 1		// disappears in future versions.
 #    endif
@@ -85,6 +85,21 @@
 	typedef int void;
 #endif /*  MSDOS   */
 #endif /*__TURBOC__*/
+
+#ifdef _WIN32
+#define open _open
+#define close _close
+#define read _read
+#define access _access
+#define eof _eof
+#define getcwd _getcwd
+#define unlink _unlink
+#define write _write
+#define MAX_PATH _MAX_PATH
+#define sys_errlist _sys_errlist
+extern unsigned int _amblksiz;
+
+#endif
 
 #if (0 ANSI(+1))
 #	define KnR(x)

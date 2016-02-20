@@ -23,9 +23,9 @@
 			  /* Note that there's a nested include for 	   */
 			  /* stdarg.h in  <tools/l.h>.			   */
 
-FILE  *yycodeout = stdout ;		/* Output stream (code). */
-FILE  *yybssout  = stdout ;		/* Output stream (bss ). */
-FILE  *yydataout = stdout ;		/* Output stream (data). */
+FILE  *yycodeout = NULL;	    /* Output stream (code). */
+FILE  *yybssout = NULL;	    /* Output stream (bss ). */
+FILE  *yydataout = NULL;	    /* Output stream (data). */
 int   yylookahead ;			/* Lookahead token.      */
 
 extern char *yytext;			/* Declared by lex in lexyy.c */
@@ -201,6 +201,13 @@ int       inp;
 }
 
 /*----------------------------------------------------------------------*/
+
+void yyinit() {
+    yycodeout = stdout ;
+    yybssout  = stdout ;
+    yydataout = stdout ;
+}
+
 #ifdef YYDEBUG
 
 yystk_dcl( Yy_dstack, char*, YYMAXDEPTH );	     /* Symbol stack       */
@@ -539,4 +546,3 @@ int	yyparse()
 
     YYACCEPT;
 }
-

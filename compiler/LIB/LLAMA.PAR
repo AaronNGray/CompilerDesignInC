@@ -124,11 +124,16 @@ yyvstype *Yy_vsp = Yy_vstack + YYMAXDEPTH;	/* Value-stack pointer	*/
 
 /*----------------------------------------------------------------------*/
 
-FILE  *yycodeout = stdout ;	/* Output stream for code. 		 */
-FILE  *yybssout  = stdout ;	/* Output stream for initialized data. 	 */
-FILE  *yydataout = stdout ;	/* Output stream for uninitialized data. */
+FILE  *yycodeout = NULL;	/* Output stream for code. 		 */
+FILE  *yybssout  = NULL;	/* Output stream for initialized data. 	 */
+FILE  *yydataout = NULL;	/* Output stream for uninitialized data. */
 int   yynerrs    = 0;		/* Error count.	 			 */
 
+void yyinit() {
+    yycodeout = stdout ;
+    yybssout  = stdout ;
+    yydataout = stdout ;
+}
 /*----------------------------------------------------------------------*/
 #ifdef YYDEBUG                  	/* Debugging parse stack. */
 

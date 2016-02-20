@@ -57,8 +57,8 @@ PRIVATE  int	Eof_read  = 0;	    /* End of file has been read.	*/
 /* Pointers to open, close, and read functions */
 
 PRIVATE	int (*Openp) P((char*, int)) = (int(*)P((char*, int))) open;
-PRIVATE	int (*Closep) P((int)      ) =close;
-PRIVATE	int (*Readp)  P((int, void*, unsigned)) =read ;
+PRIVATE	int (*Closep) P((int)      ) = close;
+PRIVATE	int (*Readp)  P((int, void*, unsigned)) = read ;
 void	ii_io( open_funct, close_funct, read_funct )
 int  (*open_funct)  P(( char* name, int mode ));
 int  (*close_funct) P(( int handle ));

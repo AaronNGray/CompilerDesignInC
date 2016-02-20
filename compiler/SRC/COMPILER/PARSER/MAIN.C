@@ -26,7 +26,7 @@
 #	undef   ALLOCATE
 #endif
 
-#if (0 MSC(+1) )
+#if (0 MSC(+1) && !defined(_WIN32))
     #pragma comment(exestr, "(C)" __DATE__ "Allen Holub. All rights reserved.")
 #endif
 
@@ -79,8 +79,10 @@ char *do_dollar	  P(( int num, int rhs_size, int lineno, PRODUCTION *prod, \
 PUBLIC	void main( argc, argv )
 char	**argv;
 {
-    MSC( _amblksiz = 2048; )	/* Declared in Microsoft C's malloc.h.        */
+    //MSC( _amblksiz = 2048; )	/* Declared in Microsoft C's malloc.h.        */
     				/* Controls size of malloc() allocation unit. */
+    Output                      = stdout; /* Output stream.		      */
+
     signon();			/* Print sign on message		   */
     signal( SIGINT, 		/* Close output files on Ctrl-Break.	   */
 	MSC((void(*)(int))) onintr );
@@ -286,13 +288,14 @@ out: ;
 /*----------------------------------------------------------------------*/
 PRIVATE	int	do_file()
 {
-
     /* Process the input file. Return the number of errors.  */
 
     struct timeb start_time, end_time ;
     long	 time;
     void 	 nows P((void));	/* declared in parser.lex */
 
+    llinit();
+    OX(yyinit());
     ftime( &start_time );    /* Initialize times now so that the difference   */
     end_time = start_time;   /* between times will be 0 if we don't build the */
 			     /* tables. Note that I'm using structure assign- */

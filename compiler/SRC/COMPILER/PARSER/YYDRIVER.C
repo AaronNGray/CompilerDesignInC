@@ -17,7 +17,7 @@ void driver		P(( void ));
 
 /*----------------------------------------------------------------------*/
 
-PRIVATE FILE	*Driver_file = stderr ;
+PRIVATE FILE	*Driver_file = NULL ;
 
 /*----------------------------------------------------------------------
  * Routines in this file are occs specific. There's a different version of all
@@ -74,5 +74,6 @@ PUBLIC	void	driver()
     if( Make_parser )
 	driver_2( Output, !No_lines );
 
-    fclose( Driver_file );
+    if (Driver_file)
+            fclose(Driver_file);
 }

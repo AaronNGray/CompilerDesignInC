@@ -7,31 +7,44 @@
 #include <tools/debug.h>
 #include <tools/compiler.h>
 
-#if( 0 BCC(+1) )		/* Borland C/C++	*/
-#include <dir.h>		/* getcwd() prototype   */
+#if( 0 BCC(+1) )                /* Borland C/C++        */
+#include <dir.h>                /* getcwd() prototype   */
 #endif
 
-#if( 0 MSC(+1) )		/* Microsoft C		*/
-#include <direct.h>		/* getcwd() prototype   */
+#if( 0 MSC(+1) )                /* Microsoft C                */
+#include <direct.h>                /* getcwd() prototype   */
 #endif
 
-#define PBUF_SIZE 129  		/* Maximum length of a path name + 1 */
+#ifdef MAX_PATH
+#define PBUF_SIZE MAX_PATH
+#else
+#define PBUF_SIZE 4096                  /* Maximum length of a path name + 1 */
+#endif
 
 #if (0 UNIX(+1))
-    define unixfy(x)	/* empty */
+static void normalize( char *str )                /* convert name to lower case */
+{                                                /* and convert \'s to /'s     */
+    for(; *str; ++str )
+        if( (*str = tolower(*str)) == '\\' )
+            *str = '/';
+}
+#define PATH_SEPARATOR      ":"
+#define DIR_SEPARATOR      "/"
 #else
-    static void unixfy( char *str )		/* convert name to lower case */
-    {						/* and convert \'s to /'s     */
-	for(; *str; ++str )
-	    if( (*str = tolower(*str)) == '\\' )
-		*str = '/';
+    static void normalize( char *str )                /* convert name to lower case */
+    {                                                /* and convert \'s to /'s     */
+        for(; *str; ++str )
+            if( (*str = tolower(*str)) == '/' )
+                *str = '\\';
     }
+#define PATH_SEPARATOR      ";"
+#define DIR_SEPARATOR       "\\"
 #endif
 /*----------------------------------------------------------------------*/
-int	searchenv( filename, envname, pathname )
-char	*filename;	/* file name to search for			*/
-char	*envname;	/* environment name to use as PATH		*/
-char	*pathname;	/* Place to put full path name when found	*/
+int        searchenv( filename, envname, pathname )
+char        *filename;        /* file name to search for                        */
+char        *envname;        /* environment name to use as PATH                */
+char        *pathname;        /* Place to put full path name when found        */
 {
     /* Search for file by looking in the directories listed in the envname
      * environment. Put the full path name (if you find it) into pathname.
@@ -44,47 +57,46 @@ char	*pathname;	/* Place to put full path name when found	*/
      * Unlike the Microsoft version, this one returns 1 on success, 0 on failure
      */
 
-    char  pbuf[PBUF_SIZE];
-    char  *p ;
-    MS( int disk; )
+        char  pbuf[PBUF_SIZE];
+        char  *p;
+        MS(int disk; )
 
-    getcwd( pathname, PBUF_SIZE );
-    MS( disk = tolower( *pathname ); )
+        getcwd(pathname, PBUF_SIZE);
+        MS(disk = tolower(*pathname); )
 
-    concat( PBUF_SIZE, pathname, pathname, "/", filename, NULL );
-    if( access( pathname, 0 ) != -1 ) 		/* check current directory */
-    {
-	unixfy( pathname );
-	return 1;				/* ...it's there.	   */
-    }
+        concat(PBUF_SIZE, pathname, pathname, "/", filename, NULL);
+        if (access(pathname, 0) != -1) 		/* check current directory */
+        {
+                normalize(pathname);
+                return 1;				/* ...it's there.	   */
+        }
 
-    /* The file doesn't exist in the current directory. If a specific path was
-     * requested (ie. file contains \ or /) or if the environment isn't set,
-     * return failure, otherwise search for the file on the path.
-     */
+        /* The file doesn't exist in the current directory. If a specific path was
+        * requested (ie. file contains \ or /) or if the environment isn't set,
+        * return failure, otherwise search for the file on the path.
+        */
 
-    if( strpbrk(filename,"\\/")  ||  !(p = getenv(envname)) )
-	return( *pathname = '\0');
+        if (strpbrk(filename, "\\/") || !(p = getenv(envname)))
+                return(*pathname = '\0');
 
-    strncpy( pbuf, p, PBUF_SIZE );
-    if( p = strtok( pbuf, "; " ) )
-    {
-	do
-	{
-	    MS( if( !p[1] || p[1] != ':' )		       		   )
-            MS(	    sprintf( pathname,"%c:%0.90s/%0.20s",disk,p,filename); )
-	    MS( else							   )
-	            sprintf( pathname, "%0.90s/%0.20s", p, filename );
+        strncpy(pbuf, p, PBUF_SIZE);
+        if (p = strtok(pbuf, "; "))
+        {
+                do
+                {
+                        MS(if (!p[1] || p[1] != ':'))
+                                MS(sprintf(pathname, "%c:%0.90s/%0.20s", disk, p, filename); )
+                                MS(else)
+                                sprintf(pathname, "%0.90s/%0.20s", p, filename);
 
-	    if( access( pathname, 0 ) >= 0 )
-	    {
-		unixfy( pathname );
-		return 1;				/* found it */
-	    }
-	}
-	while( p = strtok( NULL, "; ") );
-    }
-    return( *pathname = '\0' );
+                        if (access(pathname, 0) >= 0)
+                        {
+                                normalize(pathname);
+                                return 1;				/* found it */
+                        }
+                } while (p = strtok(NULL, "; "));
+        }
+        return(*pathname = '\0');
 }
    /*----------------------------------------------------------------------*/
 #ifdef MAIN
@@ -92,8 +104,8 @@ char	*pathname;	/* Place to put full path name when found	*/
    {
        char target_buf[256];
        if( searchenv(argv[1], "PATH", target_buf) )
-   	   printf("found %s at %s\n", argv[1], target_buf );
+              printf("found %s at %s\n", argv[1], target_buf );
        else
-   	   printf("Couldn't find %s\n", argv[1] );
+              printf("Couldn't find %s\n", argv[1] );
    }
 #endif

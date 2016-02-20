@@ -1,5 +1,6 @@
 /*@A (C) 1992 Allen I. Holub                                                */
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <sys/types.h>	 /* ANSI/UNIX time functions.			*/
 #include <sys/timeb.h>	 /* ANSI/UNIX time functions.			*/
@@ -716,7 +717,7 @@ int	print_it;		/* if true, print the stack to the log file */
     int  	  *state  	    ;   /* current state-stack pointer	     */
     char 	  **debug  	    ;   /* current debug-stack pointer	     */
     char	  *value	    ;   /* current value-stack pointer	     */
-    int		  width		    ;   /* Width of column in horiz. stack   */
+    size_t  width		    ;   /* Width of column in horiz. stack   */
     static int	  times_called = -1 ;   /* # of times this subroutine called */
     char	  *p		    ;
     int		  i		    ;

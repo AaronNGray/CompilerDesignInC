@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include <tools/debug.h>	/* VA_LIST definition */
 
-#if (0 MSC(+1))
+#if (0 MSC(+1) && !defined(_WIN32))
 #pragma loop_opt(off)  /* Can't do loop optimizations (alias problems) */
 #endif
 

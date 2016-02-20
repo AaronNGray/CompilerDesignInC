@@ -23,7 +23,7 @@ FILE	*output;
 int	lines;
 char	*file_name;
 {
-    char path[80];
+    char path[MAX_PATH];
     UNIX( extern int errno; )
 
     if( !(Input_file = fopen( file_name, "r" )) )
